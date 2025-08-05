@@ -21,7 +21,7 @@ const CONTRACT_ADDRESS = "0x5FbDB2315678afecb367f032d93F642f64180aa3";
 const BLOCKCHAIN_NODE_URL = "http://127.0.0.1:8545";
 const CONTRACT_ABI = contractInfo.abi;
 
-// --- Key Management: Load or generate persistent keys ---
+
 async function getKeys() {
     try {
         const keyData = await fs.readFile(KEY_FILE_PATH, 'utf-8');
@@ -104,7 +104,7 @@ async function main() {
             };
             const messageString = JSON.stringify(message);
             try {
-                // Step 1: Use NTRU to create a secret and a lockbox (cyphertext)
+              
                 const { cyphertext, secret } = await ntru.encrypt(subscriberPublicKey);
 
                 // --- ADDED FOR RESEARCH ---
@@ -112,10 +112,8 @@ async function main() {
                 // console.log(`    [Debug] NTRU Cyphertext (Base64): ${Buffer.from(cyphertext).toString('base64')}`);
                 // -------------------------
 
-                // Step 2: Use the NTRU secret to encrypt the message with XOR
                 const xorEncryptedMessage = xorEncrypt(messageString, secret);
 
-                // Step 3: Send the NTRU lockbox and the XOR-encrypted data
                 const payload = JSON.stringify({
                     cyphertext: Buffer.from(cyphertext).toString('base64'),
                     encryptedMessage: xorEncryptedMessage.toString('base64'),

@@ -14,7 +14,7 @@ const EDGE_SERVER_URL = "http://localhost:3000";
 const MQTT_BROKER = "mqtt://localhost:1884";
 const MQTT_TOPIC = `uav/data/${PUBLISHER_ID}`;
 
-// --- Key Management: Load or generate persistent keys ---
+
 async function getKeys() {
     try {
         const keyData = await fs.readFile(KEY_FILE_PATH, 'utf-8');
@@ -37,7 +37,7 @@ async function getKeys() {
     }
 }
 
-// --- XOR Decryption Function (it's the same as encryption) ---
+
 function xorDecrypt(encryptedData, key) {
     const dataBuffer = Buffer.from(encryptedData, 'base64');
     const output = Buffer.alloc(dataBuffer.length);
@@ -82,13 +82,13 @@ async function main() {
         console.log(`\n[Subscriber] Received message on ${topic}`);
         const payload = JSON.parse(message.toString());
         const cyphertext = Buffer.from(payload.cyphertext, 'base64');
-        const encryptedMessage = payload.encryptedMessage; // This is a Base64 string
+        const encryptedMessage = payload.encryptedMessage; 
 
         try {
-            // Step 1: Use the private key to open the NTRU lockbox and get the secret
+           
             const secret = await ntru.decrypt(cyphertext, myPrivateKey);
             
-            // Step 2: Use that secret to decrypt the main data with XOR
+         
             const decryptedBuffer = xorDecrypt(encryptedMessage, secret);
             
             const finalPayload = JSON.parse(decryptedBuffer.toString('utf8'));
